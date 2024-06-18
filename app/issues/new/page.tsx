@@ -26,6 +26,17 @@ export default function Page() {
     const [error, setError] = useState('');
     const [isSubmitting, setSubmitting] = useState(false)
 
+    const onSubmit = handleSubmit(async (data) => {
+        try {
+            setSubmitting(true);
+            await axios.post("/api/issues", data);
+            router.push('/issues');
+        } catch (error) {
+            setSubmitting(false);
+            setError('An unexpected error occured.');
+        }
+    });
+
     return (
         <div className="max-w-lg">
             {error &&
@@ -37,16 +48,7 @@ export default function Page() {
                     </Callout.Text>
                 </Callout.Root>}
 
-            <form className="space-y-3" onSubmit={handleSubmit(async (data) => {
-                try {
-                    setSubmitting(true);
-                    await axios.post("/api/issues", data);
-                    router.push('/issues');
-                } catch (error) {
-                    setSubmitting(false);
-                    setError('An unexpected error occured.');
-                }
-            })}>
+            <form className="space-y-3" onSubmit={onSubmit}>
                 <TextField.Root placeholder="Title" {...register('title')}/>
                 <ErrorMessage>{errors.title?.message}</ErrorMessage>
                 <Controller
@@ -61,3 +63,4 @@ export default function Page() {
 
     );
 }
+
